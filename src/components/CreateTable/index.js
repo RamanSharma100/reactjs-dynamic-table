@@ -9,7 +9,7 @@ const CreateTable = ({ colNo }) => {
   const [rowsData, setRowsData] = useState([[]]);
 
   const handleChange = (e, index, index2) => {
-    const fields = rowsData[index].map((r, j) => (j == index2 ? e : r));
+    const fields = rowsData[index].map((r, j) => (j === index2 ? e : r));
     setRowsData(rowsData.map((rw, i) => (i === index ? fields : rw)));
   };
 
