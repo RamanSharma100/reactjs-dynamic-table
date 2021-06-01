@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
-function App() {
+import "./App.css";
+
+import CreateTable from "./components/CreateTable";
+import Home from "./components/Home";
+
+const App = () => {
+  const [colNo, setColNo] = useState(0);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ToastContainer />
+      <Switch>
+        <Route exact path="/" component={() => <Home setColNo={setColNo} />} />
+        {colNo > 0 && (
+          <Route
+            path="/createTable"
+            component={() => <CreateTable colNo={colNo} />}
+          />
+        )}
+        <Redirect to="/" />
+      </Switch>
+    </>
   );
-}
+};
 
 export default App;
