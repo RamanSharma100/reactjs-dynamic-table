@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 const CreateTable = ({ colNo }) => {
   const [columns, setColumns] = useState(["Column 1"]);
@@ -11,6 +12,20 @@ const CreateTable = ({ colNo }) => {
   const handleChange = (e, index, index2) => {
     const fields = rowsData[index].map((r, j) => (j === index2 ? e : r));
     setRowsData(rowsData.map((rw, i) => (i === index ? fields : rw)));
+  };
+
+  const addColumn = () => {
+    if (columns.length === 10) {
+      return toast.dark("You can add max. 10 columns!");
+    }
+    setColumns((prevColumns) => [
+      ...prevColumns,
+      `Column ${columns.length + 1}`,
+    ]);
+
+    setRowsData((prevRowsData) =>
+      prevRowsData.map((row) => row.push("") && row)
+    );
   };
 
   useEffect(() => {
@@ -26,10 +41,30 @@ const CreateTable = ({ colNo }) => {
   }, []);
   return (
     <Container fluid>
+      <Row className="mt-5 mb-3">
+        <Col md={3}>
+          <h5 className="text-center">Create Table</h5>
+        </Col>
+        <Col
+          md={6}
+          className="d-flex align-items-center justify-content-end"
+          style={{ marginLeft: "auto", marginRight: "70px" }}
+        >
+          <span className="mr-2">Columns: {columns.length} </span> &nbsp;&nbsp;
+          <span className="mr-2">Rows: {rows} </span>&nbsp;&nbsp;
+          <Button type="button" variant="outline-dark">
+            Add Row
+          </Button>
+          &nbsp;&nbsp;
+          <Button type="button" onClick={addColumn} variant="outline-dark">
+            Add Column
+          </Button>
+        </Col>
+      </Row>
       <Row>
         <Col md={12} className="px-5">
           {!generating ? (
-            <Table responsive className="mt-5">
+            <Table responsive className="mt-5 h-100">
               <thead className="bg-dark text-white">
                 <tr>
                   <th className="d-flex align-items-center justify-content-center py-3 pb-2 border-0">
@@ -60,11 +95,12 @@ const CreateTable = ({ colNo }) => {
               <tbody>
                 {rowsData.map((data, index) => (
                   <tr key={index + 5}>
-                    <td>{index + 1}</td>
+                    <td className="text-center">{index + 1}</td>
                     {data.map((row, index2) => (
                       <td key={index2 + 988}>
                         <input
                           type="text"
+                          className="form-control text-center"
                           placeholder={`Enter field`}
                           value={rowsData[index][index2]}
                           onChange={(e) =>
