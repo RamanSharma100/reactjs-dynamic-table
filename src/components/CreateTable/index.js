@@ -23,6 +23,11 @@ const CreateTable = ({ colNo }) => {
     setRowsData((prevRowsData) => [...prevRowsData, array]);
   };
 
+  const deleteRow = (index) => {
+    setRows((prevRows) => prevRows - 1);
+    setRowsData((prevRowsData) => prevRowsData.filter((row, i) => i !== index));
+  };
+
   const addColumn = () => {
     if (columns.length === 10) {
       return toast.dark("You can add max. 10 columns!");
@@ -53,14 +58,15 @@ const CreateTable = ({ colNo }) => {
   };
 
   useEffect(() => {
-    let array = [""];
-    for (let i = 1; i < colNo; i++) {
-      setColumns([...columns, `Column ${i + 1}`]);
-      array.push("");
+    if (columns.length < colNo) {
+      let array = [""];
+      for (let i = 1; i < colNo; i++) {
+        setColumns([...columns, `Column ${i + 1}`]);
+        array.push("");
+      }
+      setRowsData([array]);
     }
-    setRowsData([array]);
 
-    console.log("working");
     setGenerating(false);
   }, []);
   return (
@@ -92,9 +98,9 @@ const CreateTable = ({ colNo }) => {
               <Table responsive className="mt-5">
                 <tbody>
                   <tr>
-                    <td>#</td>
+                    <th>#</th>
                     {columns.map((col, index) => (
-                      <td key={index + 999999}>
+                      <th key={index + 999999}>
                         <Button
                           type="button"
                           className="btn-block w-100"
@@ -103,8 +109,10 @@ const CreateTable = ({ colNo }) => {
                         >
                           Delete
                         </Button>
-                      </td>
+                      </th>
                     ))}
+                    <th></th>
+                    <th></th>
                   </tr>
                 </tbody>
               </Table>
@@ -137,6 +145,7 @@ const CreateTable = ({ colNo }) => {
                         />
                       </th>
                     ))}
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -156,6 +165,15 @@ const CreateTable = ({ colNo }) => {
                           />
                         </td>
                       ))}
+                      <td className="text-center">
+                        <Button
+                          type="button"
+                          onClick={() => deleteRow(index)}
+                          variant={"outline-danger"}
+                        >
+                          Delete
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
