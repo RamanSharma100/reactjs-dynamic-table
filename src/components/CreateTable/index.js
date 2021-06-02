@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
+import ExportToExcel from "../ExportToExcel";
 
 const CreateTable = ({ colNo }) => {
   const [columns, setColumns] = useState(["Column 1"]);
@@ -72,8 +73,6 @@ const CreateTable = ({ colNo }) => {
       });
       data.push(obj);
     });
-
-    console.log(data);
   };
 
   useEffect(() => {
@@ -110,9 +109,7 @@ const CreateTable = ({ colNo }) => {
             Save as JSON
           </Button>
           &nbsp;&nbsp;
-          <Button type="button" onClick={makeData} variant="success">
-            Export Excel
-          </Button>
+          <ExportToExcel columns={columns} rowsData={rowsData} />
         </Col>
       </Row>
       <Row>
