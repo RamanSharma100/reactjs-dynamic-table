@@ -63,7 +63,7 @@ const CreateTable = ({ colNo }) => {
     );
   };
 
-  const makeData = () => {
+  const exportToJson = () => {
     const data = [];
 
     rowsData.map((row, index) => {
@@ -73,6 +73,14 @@ const CreateTable = ({ colNo }) => {
       });
       data.push(obj);
     });
+
+    const fileData = JSON.stringify(data);
+    const blob = new Blob([fileData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = `data.json`;
+    link.href = url;
+    link.click();
   };
 
   useEffect(() => {
@@ -105,7 +113,7 @@ const CreateTable = ({ colNo }) => {
             Add Column
           </Button>
           &nbsp;&nbsp;
-          <Button type="button" onClick={makeData} variant="success">
+          <Button type="button" onClick={exportToJson} variant="success">
             Save as JSON
           </Button>
           &nbsp;&nbsp;
