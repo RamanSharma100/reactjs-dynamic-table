@@ -6,8 +6,9 @@ const CreateTable = ({ colNo }) => {
   const [columns, setColumns] = useState(["Column 1"]);
   const [generating, setGenerating] = useState(true);
   const [readOnly, setReadOnly] = useState(true);
-  const [rows, setRows] = useState(1);
-  const [rowsData, setRowsData] = useState([[]]);
+  const [rows, setRows] = useState(0);
+  const [rowsData, setRowsData] = useState([]);
+  const [modified, setModified] = useState(false);
 
   const handleChange = (e, index, index2) => {
     const fields = rowsData[index].map((r, j) => (j === index2 ? e : r));
@@ -15,20 +16,23 @@ const CreateTable = ({ colNo }) => {
   };
 
   const addRow = () => {
+    setModified(true);
     setRows((prevRows) => prevRows + 1);
     let array = [""];
-    for (let i = 1; i < colNo; i++) {
+    for (let i = 1; i < columns.length; i++) {
       array.push("");
     }
     setRowsData((prevRowsData) => [...prevRowsData, array]);
   };
 
   const deleteRow = (index) => {
+    setModified(true);
     setRows((prevRows) => prevRows - 1);
     setRowsData((prevRowsData) => prevRowsData.filter((row, i) => i !== index));
   };
 
   const addColumn = () => {
+    setModified(true);
     if (columns.length === 10) {
       return toast.dark("You can add max. 10 columns!");
     }
@@ -42,6 +46,7 @@ const CreateTable = ({ colNo }) => {
     );
   };
   const deleteColumn = (index) => {
+    setModified(true);
     if (columns.length === 1) {
       return toast.dark("There Should be atleast 1 column!");
     }
@@ -57,18 +62,29 @@ const CreateTable = ({ colNo }) => {
     );
   };
 
+  const makeData = () => {
+    const data = [];
+
+    rowsData.map((row, index) => {
+      const obj = { sno: index + 1 };
+      columns.map((col, i) => {
+        obj[col] = row[i];
+      });
+      data.push(obj);
+    });
+
+    console.log(data);
+  };
+
   useEffect(() => {
-    if (columns.length < colNo) {
-      let array = [""];
+    if (columns.length < colNo && !modified) {
       for (let i = 1; i < colNo; i++) {
         setColumns([...columns, `Column ${i + 1}`]);
-        array.push("");
       }
-      setRowsData([array]);
     }
-
     setGenerating(false);
   }, []);
+
   return (
     <Container fluid>
       <Row className="mt-5 mb-3">
@@ -89,16 +105,24 @@ const CreateTable = ({ colNo }) => {
           <Button type="button" onClick={addColumn} variant="outline-dark">
             Add Column
           </Button>
+          &nbsp;&nbsp;
+          <Button type="button" onClick={makeData} variant="success">
+            Save as JSON
+          </Button>
+          &nbsp;&nbsp;
+          <Button type="button" onClick={makeData} variant="success">
+            Export Excel
+          </Button>
         </Col>
       </Row>
       <Row>
         <Col md={12} className="px-5">
           {!generating ? (
             <>
-              <Table responsive className="mt-5">
-                <tbody>
+              <Table responsive className="my-5 h-100">
+                <thead>
                   <tr>
-                    <th>#</th>
+                    <th></th>
                     {columns.map((col, index) => (
                       <th key={index + 999999}>
                         <Button
@@ -106,19 +130,15 @@ const CreateTable = ({ colNo }) => {
                           className="btn-block w-100"
                           onClick={() => deleteColumn(index)}
                           variant="outline-danger"
+                          size="sm"
                         >
                           Delete
                         </Button>
                       </th>
                     ))}
                     <th></th>
-                    <th></th>
                   </tr>
-                </tbody>
-              </Table>
-              <Table responsive className="mt-2 h-100">
-                <thead className="bg-dark text-white">
-                  <tr>
+                  <tr className="bg-dark text-white">
                     <th
                       scope="col"
                       className="d-flex align-items-center justify-content-center py-3 pb-2 border-0"
@@ -145,37 +165,87 @@ const CreateTable = ({ colNo }) => {
                         />
                       </th>
                     ))}
-                    <th></th>
+                    <th className="text-center">
+                      <Button
+                        type="button"
+                        onClick={addColumn}
+                        variant="outline-light"
+                        size="sm"
+                      >
+                        Add Column
+                      </Button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rowsData.map((data, index) => (
-                    <tr key={index + 5}>
-                      <td className="text-center">{index + 1}</td>
-                      {data.map((row, index2) => (
-                        <td key={index2 + 988}>
-                          <input
-                            type="text"
-                            className="form-control text-center"
-                            placeholder={`Enter field`}
-                            value={rowsData[index][index2]}
-                            onChange={(e) =>
-                              handleChange(e.target.value, index, index2)
-                            }
-                          />
-                        </td>
+                  {rowsData.length > 0 ? (
+                    <>
+                      {rowsData.map((data, index) => (
+                        <tr key={index + 5}>
+                          <td className="text-center">{index + 1}</td>
+                          {data.map((row, index2) => (
+                            <td key={index2 + 988}>
+                              <input
+                                type="text"
+                                className="form-control text-center"
+                                placeholder={`Enter field`}
+                                value={rowsData[index][index2]}
+                                onChange={(e) =>
+                                  handleChange(e.target.value, index, index2)
+                                }
+                              />
+                            </td>
+                          ))}
+                          <td className="text-center">
+                            <Button
+                              type="button"
+                              onClick={() => deleteRow(index)}
+                              variant={"outline-danger"}
+                              size="sm"
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        </tr>
                       ))}
-                      <td className="text-center">
-                        <Button
-                          type="button"
-                          onClick={() => deleteRow(index)}
-                          variant={"outline-danger"}
+
+                      <tr>
+                        <th colSpan={columns.length + 2} className="pt-5">
+                          <Button
+                            type="button"
+                            onClick={addRow}
+                            className="w-100"
+                            variant="outline-dark"
+                          >
+                            Add Row
+                          </Button>
+                        </th>
+                      </tr>
+                    </>
+                  ) : (
+                    <>
+                      <tr>
+                        <th
+                          className="text-center py-3"
+                          colSpan={columns.length + 2}
                         >
-                          Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                          Please click on Add Row Button to add a row
+                        </th>
+                      </tr>
+                      <tr>
+                        <th colSpan={columns.length + 2}>
+                          <Button
+                            type="button"
+                            onClick={addRow}
+                            className="w-100"
+                            variant="outline-dark"
+                          >
+                            Add Row
+                          </Button>
+                        </th>
+                      </tr>
+                    </>
+                  )}
                 </tbody>
               </Table>
             </>
