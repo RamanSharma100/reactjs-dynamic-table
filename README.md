@@ -30,14 +30,12 @@ Create Table Page:-
 1.  Download this repository as zip.
 
 2. Then run command 
-```yarn
-``` 
+``` yarn ``` 
 to install dependencies [make sure you have installed yarn]
 
 
 3. Then run command 
-```yarn start
-``` 
+``` yarn start ``` 
 to start the development server
 
 ## Enjoy Browsing!!
