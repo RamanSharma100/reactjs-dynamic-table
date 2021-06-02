@@ -9,6 +9,8 @@
 
 - Create Table With Custom Rows and Columns
 
+- Edit Column Name By Clicking on Particular column
+
 - Delete and Add Column Whenever You Want
 
 - Delete and Add Row Whenever You Want 
