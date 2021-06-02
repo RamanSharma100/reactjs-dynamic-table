@@ -14,6 +14,15 @@ const CreateTable = ({ colNo }) => {
     setRowsData(rowsData.map((rw, i) => (i === index ? fields : rw)));
   };
 
+  const addRow = () => {
+    setRows((prevRows) => prevRows + 1);
+    let array = [""];
+    for (let i = 1; i < colNo; i++) {
+      array.push("");
+    }
+    setRowsData((prevRowsData) => [...prevRowsData, array]);
+  };
+
   const addColumn = () => {
     if (columns.length === 10) {
       return toast.dark("You can add max. 10 columns!");
@@ -67,7 +76,7 @@ const CreateTable = ({ colNo }) => {
         >
           <span className="mr-2">Columns: {columns.length} </span> &nbsp;&nbsp;
           <span className="mr-2">Rows: {rows} </span>&nbsp;&nbsp;
-          <Button type="button" variant="outline-dark">
+          <Button type="button" onClick={addRow} variant="outline-dark">
             Add Row
           </Button>
           &nbsp;&nbsp;
